@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Kostenanalyse für Unternehmen: Fehlzeiten, Produktivitätsverluste und Fluktuationskosten sichtbar machen." />
+  <title>Firmenkosten-Check | Versteckte Kosten erkennen</title>
+  <style>
+    :root {
+      --bg: #07111f;
+      --card: #0f1d31;
+      --card-2: #142640;
+      --text: #f7f9fc;
+      --muted: #a9b7c9;
+      --accent: #39d98a;
+      --accent-2: #4da3ff;
+      --danger: #ff6b6b;
+      --border: rgba(255,255,255,.10);
+      --shadow: 0 20px 60px rgba(0,0,0,.28);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at 10% 10%, rgba(77,163,255,.16), transparent 28%),
+        radial-gradient(circle at 90% 15%, rgba(57,217,138,.12), transparent 24%),
+        var(--bg);
+      color: var(--text);
+      line-height: 1.55;
+    }
+
+    .container {
+      width: min(1120px, calc(100% - 32px));
+      margin: 0 auto;
+    }
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      backdrop-filter: blur(14px);
+      background: rgba(7,17,31,.78);
+      border-bottom: 1px solid var(--border);
+    }
+
+    nav {
+      min-height: 72px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .brand {
+      font-weight: 800;
+      letter-spacing: .2px;
+    }
+
+    .brand span { color: var(--accent); }
+
+    .nav-link {
+      color: var(--text);
+      text-decoration: none;
+      font-weight: 700;
+      padding: 11px 16px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--accent), #24b977);
+      color: #04130c;
+    }
+
+    .hero {
+      padding: 86px 0 48px;
+      display: grid;
+      grid-template-columns: 1.2fr .8fr;
+      gap: 44px;
+      align-items: center;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      padding: 8px 12px;
+      border: 1px solid rgba(57,217,138,.28);
+      color: var(--accent);
+      border-radius: 999px;
+      font-size: 14px;
+      font-weight: 800;
+      background: rgba(57,217,138,.08);
+    }
+
+    h1 {
+      font-size: clamp(38px, 6vw, 68px);
+      line-height: 1.03;
+      margin: 18px 0;
+      letter-spacing: -2px;
+    }
+
+    .hero p {
+      color: var(--muted);
+      font-size: 19px;
+      max-width: 760px;
+    }
+
+    .hero-card, .panel {
+      background: linear-gradient(180deg, rgba(20,38,64,.96), rgba(15,29,49,.96));
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+    }
+
+    .hero-card {
+      padding: 24px;
+    }
+
+    .metric {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 16px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .metric:last-child { border-bottom: 0; }
+    .metric strong { color: var(--danger); font-size: 20px; }
+
+    main { padding: 28px 0 80px; }
+
+    .tool {
+      display: grid;
+      grid-template-columns: .95fr 1.05fr;
+      gap: 28px;
+      align-items: start;
+    }
+
+    .panel { padding: 28px; }
+
+    h2 {
+      margin: 0 0 8px;
+      font-size: 30px;
+    }
+
+    .sub {
+      color: var(--muted);
+      margin: 0 0 24px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    label {
+      font-weight: 750;
+      font-size: 14px;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      border: 1px solid var(--border);
+      background: #0a1728;
+      color: var(--text);
+      border-radius: 12px;
+      padding: 14px 15px;
+      font: inherit;
+      outline: none;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--accent-2);
+      box-shadow: 0 0 0 3px rgba(77,163,255,.13);
+    }
+
+    button {
+      border: 0;
+      cursor: pointer;
+      font: inherit;
+      font-weight: 850;
+      padding: 15px 18px;
+      border-radius: 13px;
+    }
+
+    .primary {
+      width: 100%;
+      background: linear-gradient(135deg, var(--accent), #23b873);
+      color: #04130c;
+    }
+
+    .secondary {
+      width: 100%;
+      margin-top: 12px;
+      background: transparent;
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    .results {
+      display: grid;
+      gap: 14px;
+      margin-top: 22px;
+    }
+
+    .result {
+      padding: 18px;
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,.025);
+    }
+
+    .result small {
+      display: block;
+      color: var(--muted);
+      margin-bottom: 5px;
+    }
+
+    .result strong {
+      font-size: 28px;
+      letter-spacing: -.5px;
+    }
+
+    .result.danger strong { color: var(--danger); }
+    .result.good strong { color: var(--accent); }
+
+    .total {
+      border-color: rgba(255,107,107,.35);
+      background: rgba(255,107,107,.07);
+    }
+
+    .note {
+      color: var(--muted);
+      font-size: 13px;
+      margin-top: 14px;
+    }
+
+    .lead-box {
+      margin-top: 28px;
+      border-top: 1px solid var(--border);
+      padding-top: 24px;
+    }
+
+    .success {
+      display: none;
+      margin-top: 14px;
+      padding: 14px;
+      border-radius: 12px;
+      background: rgba(57,217,138,.10);
+      border: 1px solid rgba(57,217,138,.30);
+      color: #bff4d7;
+    }
+
+    footer {
+      border-top: 1px solid var(--border);
+      color: var(--muted);
+      padding: 30px 0;
+      font-size: 14px;
+    }
+
+    @media (max-width: 860px) {
+      .hero, .tool { grid-template-columns: 1fr; }
+      .hero { padding-top: 56px; }
+    }
+
+    @media (max-width: 600px) {
+      .grid { grid-template-columns: 1fr; }
+      nav { min-height: 64px; }
+      .nav-link { display: none; }
+      .panel { padding: 20px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container">
+      <nav>
+        <div class="brand">Firmenkosten<span>Check</span></div>
+        <a class="nav-link" href="#analyse">Kosten prüfen</a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="container">
+    <section class="hero">
+      <div>
+        <span class="eyebrow">Kostenlose Unternehmensanalyse</span>
+        <h1>Welche Kosten bleiben in Ihrem Unternehmen unsichtbar?</h1>
+        <p>
+          Berechnen Sie in wenigen Minuten mögliche Kosten durch Krankheitstage,
+          Produktivitätsverluste und Mitarbeiterfluktuation. Sie erhalten sofort
+          eine erste Orientierung.
+        </p>
+      </div>
+
+      <aside class="hero-card">
+        <div class="metric">
+          <span>Fehlzeiten</span>
+          <strong>Personalkosten</strong>
+        </div>
+        <div class="metric">
+          <span>Produktivitätsverlust</span>
+          <strong>Umsatzpotenzial</strong>
+        </div>
+        <div class="metric">
+          <span>Fluktuation</span>
+          <strong>Neubesetzung</strong>
+        </div>
+      </aside>
+    </section>
+
+    <main id="analyse">
+      <section class="tool">
+        <div class="panel">
+          <h2>Unternehmensdaten</h2>
+          <p class="sub">Tragen Sie realistische Durchschnittswerte ein.</p>
+
+          <div class="grid">
+            <div class="field">
+              <label for="employees">Mitarbeiterzahl</label>
+              <input id="employees" type="number" min="1" value="25" />
+            </div>
+
+            <div class="field">
+              <label for="salary">Ø Bruttogehalt pro Monat (€)</label>
+              <input id="salary" type="number" min="0" value="3500" />
+            </div>
+
+            <div class="field">
+              <label for="sickDays">Ø Krankheitstage pro Mitarbeiter/Jahr</label>
+              <input id="sickDays" type="number" min="0" step="0.5" value="15" />
+            </div>
+
+            <div class="field">
+              <label for="employerCost">Arbeitgeber-Nebenkosten (%)</label>
+              <input id="employerCost" type="number" min="0" step="0.1" value="21" />
+            </div>
+
+            <div class="field">
+              <label for="productivityLoss">Produktivitätsverlust (%)</label>
+              <input id="productivityLoss" type="number" min="0" max="100" step="1" value="8" />
+            </div>
+
+            <div class="field">
+              <label for="annualTurnover">Abgänge pro Jahr</label>
+              <input id="annualTurnover" type="number" min="0" value="3" />
+            </div>
+
+            <div class="field">
+              <label for="replacementFactor">Kosten je Neubesetzung</label>
+              <select id="replacementFactor">
+                <option value="0.25">25 % eines Jahresgehalts</option>
+                <option value="0.50" selected>50 % eines Jahresgehalts</option>
+                <option value="0.75">75 % eines Jahresgehalts</option>
+                <option value="1.00">100 % eines Jahresgehalts</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="workingDays">Arbeitstage pro Jahr</label>
+              <input id="workingDays" type="number" min="1" value="220" />
+            </div>
+          </div>
+
+          <button class="primary" id="calculateBtn">Versteckte Kosten berechnen</button>
+        </div>
+
+        <div class="panel">
+          <h2>Erste Kosteneinschätzung</h2>
+          <p class="sub">Die Berechnung ist eine unverbindliche Modellrechnung.</p>
+
+          <div class="results">
+            <div class="result danger">
+              <small>Kosten durch Fehlzeiten pro Jahr</small>
+              <strong id="absenceCost">0 €</strong>
+            </div>
+
+            <div class="result danger">
+              <small>Mögliches Produktivitätspotenzial pro Jahr</small>
+              <strong id="productivityCost">0 €</strong>
+            </div>
+
+            <div class="result danger">
+              <small>Geschätzte Fluktuationskosten pro Jahr</small>
+              <strong id="turnoverCost">0 €</strong>
+            </div>
+
+            <div class="result danger total">
+              <small>Gesamtes sichtbares Kostenpotenzial</small>
+              <strong id="totalCost">0 €</strong>
+            </div>
+
+            <div class="result good">
+              <small>Schon 10 % Verbesserung könnten entsprechen</small>
+              <strong id="savingPotential">0 €</strong>
+            </div>
+          </div>
+
+          <p class="note">
+            Hinweis: Die Werte ersetzen keine betriebswirtschaftliche oder steuerliche Beratung.
+            Sie dienen als Gesprächsgrundlage für eine individuelle Analyse.
+          </p>
+
+          <div class="lead-box">
+            <h2>Kostenlose Detailauswertung anfragen</h2>
+            <p class="sub">
+              Hinterlassen Sie Ihre Kontaktdaten. Die aktuellen Ergebnisse werden
+              in die Anfrage übernommen.
+            </p>
+
+            <form id="leadForm">
+              <div class="field">
+                <label for="company">Unternehmen</label>
+                <input id="company" required placeholder="Muster GmbH" />
+              </div>
+
+              <div class="grid">
+                <div class="field">
+                  <label for="name">Ansprechpartner</label>
+                  <input id="name" required placeholder="Max Mustermann" />
+                </div>
+
+                <div class="field">
+                  <label for="phone">Telefon</label>
+                  <input id="phone" required placeholder="+49 ..." />
+                </div>
+              </div>
+
+              <div class="field">
+                <label for="email">E-Mail</label>
+                <input id="email" type="email" required placeholder="name@unternehmen.de" />
+              </div>
+
+              <div class="field">
+                <label for="message">Nachricht</label>
+                <textarea id="message" rows="4" placeholder="Wann dürfen wir Sie am besten erreichen?"></textarea>
+              </div>
+
+              <label style="display:flex; gap:10px; align-items:flex-start; margin:10px 0 16px; font-weight:500;">
+                <input id="privacy" type="checkbox" required style="width:auto; margin-top:4px;" />
+                <span>Ich stimme zu, dass meine Angaben zur Kontaktaufnahme verarbeitet werden.</span>
+              </label>
+
+              <button class="primary" type="submit">Auswertung per E-Mail anfragen</button>
+              <button class="secondary" type="button" id="copyBtn">Ergebnis kopieren</button>
+              <div class="success" id="successBox">
+                Die E-Mail-Anwendung wurde geöffnet. Prüfen Sie die Angaben und senden Sie die Anfrage ab.
+              </div>
+            </form>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  
+<section class="container" style="padding-bottom:40px;">
+<div class="panel">
+<h2>Ihr Ansprechpartner</h2>
+<p><strong>Davit Makaryan</strong><br>
+Vermögensberater</p>
+<p>📧 E-Mail: <a href="mailto:davit.makaryan@dvag.de" style="color:#4da3ff;">davit.makaryan@dvag.de</a><br>
+📱 Telefon: <a href="tel:+4917641946469" style="color:#4da3ff;">0176 41946469</a><br>
+🌐 Website: <a href="https://www.davit-makaryan.dvag" style="color:#4da3ff;">www.davit-makaryan.dvag</a></p>
+<p><strong>Kostenlose Erstanalyse anfordern.</strong><br>Nach Ihrer Anfrage melde ich mich persönlich zur Besprechung Ihrer Ergebnisse.</p>
+</div>
+</section>
+
+<footer>
+    <div class="container">
+      <strong>FirmenkostenCheck</strong><br />
+      Bitte ergänzen: vollständiges Impressum, Datenschutzerklärung, Vermittlerangaben
+      und Ihre geschäftlichen Kontaktdaten.
+    </div>
+  </footer>
+
+  <script>
+    // HIER DEINE E-MAIL-ADRESSE EINTRAGEN
+    const advisorEmail = "davit.makaryan@dvag.de";
+
+    const euro = new Intl.NumberFormat("de-DE", {
+      style: "currency",
+      currency: "EUR",
+      maximumFractionDigits: 0
+    });
+
+    const ids = [
+      "employees", "salary", "sickDays", "employerCost",
+      "productivityLoss", "annualTurnover", "replacementFactor", "workingDays"
+    ];
+
+    let currentResults = {
+      absenceCost: 0,
+      productivityCost: 0,
+      turnoverCost: 0,
+      totalCost: 0,
+      savingPotential: 0
+    };
+
+    function value(id) {
+      return Number(document.getElementById(id).value) || 0;
+    }
+
+    function calculate() {
+      const employees = Math.max(value("employees"), 0);
+      const salary = Math.max(value("salary"), 0);
+      const sickDays = Math.max(value("sickDays"), 0);
+      const employerCost = Math.max(value("employerCost"), 0) / 100;
+      const productivityLoss = Math.max(value("productivityLoss"), 0) / 100;
+      const annualTurnover = Math.max(value("annualTurnover"), 0);
+      const replacementFactor = Math.max(value("replacementFactor"), 0);
+      const workingDays = Math.max(value("workingDays"), 1);
+
+      const monthlyEmployerCost = salary * (1 + employerCost);
+      const annualEmployerCostPerEmployee = monthlyEmployerCost * 12;
+      const dailyEmployerCost = annualEmployerCostPerEmployee / workingDays;
+
+      const absenceCost = employees * sickDays * dailyEmployerCost;
+      const productivityCost = employees * annualEmployerCostPerEmployee * productivityLoss;
+      const turnoverCost = annualTurnover * (salary * 12) * replacementFactor;
+      const totalCost = absenceCost + productivityCost + turnoverCost;
+      const savingPotential = totalCost * 0.10;
+
+      currentResults = {
+        absenceCost,
+        productivityCost,
+        turnoverCost,
+        totalCost,
+        savingPotential
+      };
+
+      document.getElementById("absenceCost").textContent = euro.format(absenceCost);
+      document.getElementById("productivityCost").textContent = euro.format(productivityCost);
+      document.getElementById("turnoverCost").textContent = euro.format(turnoverCost);
+      document.getElementById("totalCost").textContent = euro.format(totalCost);
+      document.getElementById("savingPotential").textContent = euro.format(savingPotential);
+    }
+
+    function createSummary() {
+      return [
+        "Firmenkosten-Analyse",
+        "",
+        "Mitarbeiterzahl: " + value("employees"),
+        "Ø Bruttogehalt: " + euro.format(value("salary")),
+        "Ø Krankheitstage: " + value("sickDays"),
+        "Arbeitgeber-Nebenkosten: " + value("employerCost") + " %",
+        "Produktivitätsverlust: " + value("productivityLoss") + " %",
+        "Abgänge pro Jahr: " + value("annualTurnover"),
+        "",
+        "Kosten durch Fehlzeiten: " + euro.format(currentResults.absenceCost),
+        "Produktivitätspotenzial: " + euro.format(currentResults.productivityCost),
+        "Fluktuationskosten: " + euro.format(currentResults.turnoverCost),
+        "Gesamtes Kostenpotenzial: " + euro.format(currentResults.totalCost),
+        "10 % Verbesserungspotenzial: " + euro.format(currentResults.savingPotential)
+      ].join("\n");
+    }
+
+    document.getElementById("calculateBtn").addEventListener("click", calculate);
+    ids.forEach(id => document.getElementById(id).addEventListener("input", calculate));
+
+    document.getElementById("copyBtn").addEventListener("click", async () => {
+      try {
+        await navigator.clipboard.writeText(createSummary());
+        document.getElementById("copyBtn").textContent = "Ergebnis kopiert";
+        setTimeout(() => {
+          document.getElementById("copyBtn").textContent = "Ergebnis kopieren";
+        }, 1800);
+      } catch {
+        alert("Kopieren war nicht möglich. Bitte markieren Sie die Ergebnisse manuell.");
+      }
+    });
+
+    document.getElementById("leadForm").addEventListener("submit", event => {
+      event.preventDefault();
+
+      const company = document.getElementById("company").value.trim();
+      const name = document.getElementById("name").value.trim();
+      const phone = document.getElementById("phone").value.trim();
+      const email = document.getElementById("email").value.trim();
+      const message = document.getElementById("message").value.trim();
+
+      const subject = "Anfrage Firmenkosten-Analyse – " + company;
+      const body = [
+        "Guten Tag,",
+        "",
+        "ich interessiere mich für eine kostenlose Detailauswertung.",
+        "",
+        "Unternehmen: " + company,
+        "Ansprechpartner: " + name,
+        "Telefon: " + phone,
+        "E-Mail: " + email,
+        "",
+        message ? "Nachricht: " + message : "",
+        "",
+        createSummary(),
+        "",
+        "Bitte kontaktieren Sie mich für eine kurze Auswertung."
+      ].filter(Boolean).join("\n");
+
+      window.location.href =
+        "mailto:" + encodeURIComponent(advisorEmail) +
+        "?subject=" + encodeURIComponent(subject) +
+        "&body=" + encodeURIComponent(body);
+
+      document.getElementById("successBox").style.display = "block";
+    });
+
+    calculate();
+  </script>
+</body>
+</html>
